@@ -1,3 +1,3 @@
+pub mod int_repr;
 pub mod object;
 pub mod repository;
-pub mod int_repr;

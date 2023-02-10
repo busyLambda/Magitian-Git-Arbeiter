@@ -1,11 +1,11 @@
-mod services;
 mod extras;
+mod services;
 
 use std::io::Read;
 
-use actix_web::{web::scope, App, HttpServer, middleware::Logger, Responder, get, HttpResponse};
+use actix_web::{get, middleware::Logger, web::scope, App, HttpResponse, HttpServer, Responder};
 
-use services::repository::new_repository;
+use services::{object::blob, repository::new_repository};
 
 #[macro_use]
 extern crate log;
@@ -13,20 +13,19 @@ extern crate env_logger;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    std::env::set_var("RUST_LOG", "actix_web=info");
     env_logger::init();
     info!("Starting server on 0.0.0.0:8984");
     HttpServer::new(|| {
-        App::new()
-            .wrap(Logger::default())
-            .service(index)
-            .service(scope("/api")
-                .service(scope("repository")
-                    .service(new_repository)
-            )
+        App::new().wrap(Logger::default()).service(index).service(
+            scope("/api")
+                .service(scope("repository").service(new_repository))
+                .service(scope("object").service(blob)),
         )
-        }).bind(("0.0.0.0", 8984))?
-        .run()
-        .await
+    })
+    .bind(("0.0.0.0", 8984))?
+    .run()
+    .await
 }
 
 #[get("/")]
