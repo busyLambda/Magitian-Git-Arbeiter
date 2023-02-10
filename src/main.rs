@@ -1,7 +1,9 @@
 mod services;
 mod extras;
 
-use actix_web::{web::scope, App, HttpServer, middleware::Logger};
+use std::io::Read;
+
+use actix_web::{web::scope, App, HttpServer, middleware::Logger, Responder, get, HttpResponse};
 
 use services::repository::new_repository;
 
@@ -16,6 +18,7 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         App::new()
             .wrap(Logger::default())
+            .service(index)
             .service(scope("/api")
                 .service(scope("repository")
                     .service(new_repository)
@@ -24,4 +27,13 @@ async fn main() -> std::io::Result<()> {
         }).bind(("0.0.0.0", 8984))?
         .run()
         .await
+}
+
+#[get("/")]
+async fn index() -> impl Responder {
+    let mut file = std::fs::File::open("index.html").unwrap();
+    let mut html = String::new();
+    file.read_to_string(&mut html).unwrap();
+
+    HttpResponse::Ok().body(html)
 }
