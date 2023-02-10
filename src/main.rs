@@ -1,4 +1,5 @@
 mod services;
+mod extras;
 
 use actix_web::{web::scope, App, HttpServer, middleware::Logger};
 
