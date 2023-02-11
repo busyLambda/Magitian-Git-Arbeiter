@@ -8,7 +8,7 @@ pub enum Component {
 impl Component {
     fn parse(path: String) -> Vec<Self> {
         let parts: Vec<&str> = path.split("/").collect();
-        let components: Vec<Component> = parts
+        parts
             .into_iter()
             .enumerate()
             .map(|(index, part)| {
@@ -18,9 +18,7 @@ impl Component {
                     Component::Tree(part.to_string())
                 }
             })
-            .collect();
-
-        components
+            .collect()
     }
 }
 
