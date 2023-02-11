@@ -32,3 +32,8 @@ pub async fn delete_repository(repo_form: Query<NewRepoQ>) -> impl Responder {
 pub async fn fork() -> impl Responder {
     "fork"
 }
+
+#[get("/diffs")]
+pub async fn get_diffs() -> impl Responder {
+    "diffs"
+}
