@@ -27,3 +27,8 @@ pub async fn delete_repository(repo_form: Query<NewRepoQ>) -> impl Responder {
         repo_form.user_dir, repo_form.repo_name
     )
 }
+
+#[get("/fork")]
+pub async fn fork() -> impl Responder {
+    "fork"
+}
