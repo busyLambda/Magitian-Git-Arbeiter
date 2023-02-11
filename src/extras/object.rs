@@ -7,7 +7,20 @@ pub enum Component {
 
 impl Component {
     fn parse(path: String) -> Vec<Self> {
-        todo!()
+        let parts: Vec<&str> = path.split("/").collect();
+        let components: Vec<Component> = parts
+            .into_iter()
+            .enumerate()
+            .map(|(index, part)| {
+                if index == parts.len() {
+                    Component::Blob(part.to_string())
+                } else {
+                    Component::Tree(part.to_string())
+                }
+            })
+            .collect();
+
+        components
     }
 }
 
@@ -16,11 +29,11 @@ impl Component {
 pub struct TreeIterator<'a> {
     repo: &'a Repository,
     tree: git2::Tree<'a>,
-    components: &'a [Component],
+    components: Vec<Component>,
     index: usize,
 }
 impl<'a> TreeIterator<'a> {
-    fn new(repo: &'a Repository, tree: git2::Tree<'a>, components: &'a [Component]) -> Self {
+    pub fn new(repo: &'a Repository, tree: git2::Tree<'a>, components: Vec<Component>) -> Self {
         Self {
             repo,
             tree,
