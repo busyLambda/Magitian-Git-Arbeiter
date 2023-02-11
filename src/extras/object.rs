@@ -30,10 +30,45 @@ impl<'a> TreeIterator<'a> {
     }
 }
 
+// TODO: introduce error handling and rewrite some of the parts such as the clone() call on ```self.tree```
 impl<'a> Iterator for TreeIterator<'a> {
     type Item = Result<Option<String>, git2::Error>;
 
     fn next(&mut self) -> Option<Self::Item> {
-        todo!()
+        if self.index >= self.components.len() {
+            return None;
+        }
+        // TODO: remove clone()
+        let component = &self.components[self.index];
+        match component {
+            Component::Tree(name) => {
+                let tree2 = self.tree.clone();
+                let entry = tree2.get_name(name.as_str()).unwrap();
+                match entry.kind() {
+                    Some(git2::ObjectType::Tree) => {
+                        self.tree = self.repo.find_tree(entry.id()).unwrap();
+                        self.index += 1;
+                        Some(Ok(None))
+                    }
+                    _ => {
+                        Some(Ok(None))
+                    }
+                }
+            }
+            Component::Blob(name) => {
+                let entry = self.tree.get_name(name.as_str()).unwrap();
+                match entry.kind() {
+                    Some(git2::ObjectType::Blob) => {
+                        let blob = self.repo.find_blob(entry.id()).unwrap();
+                        let content = String::from_utf8_lossy(blob.content()).to_string();
+                        self.index = self.components.len();
+                        Some(Ok(Some(content)))
+                    },
+                    _ => {
+                        Some(Ok(None))
+                    }
+                }
+            }
+        }
     }
 }
