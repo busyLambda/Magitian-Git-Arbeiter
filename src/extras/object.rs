@@ -6,8 +6,17 @@ pub enum Component {
 }
 
 impl Component {
-    fn parse(path: String) -> Vec<Self> {
+    // Parse a string as a Vec<Component>
+    fn to_string(path: String) -> Vec<Self> {
+        // Split up the path into a Vec<&str> by dividing it up at the '/' character
         let parts: Vec<&str> = path.split("/").collect();
+        // Transform the parts into a Vec<Component>
+
+        /*
+            TODO: Redo the Component struct So that instead of Tree and Blob we have
+            Final and Tree so that we can use this same thing for the tree route as
+            well also we could just have two parse functions for the separate routes.
+        */
         parts
             .into_iter()
             .enumerate()
