@@ -50,9 +50,7 @@ impl<'a> Iterator for TreeIterator<'a> {
                         self.index += 1;
                         Some(Ok(None))
                     }
-                    _ => {
-                        Some(Ok(None))
-                    }
+                    _ => Some(Ok(None)),
                 }
             }
             Component::Blob(name) => {
@@ -63,10 +61,8 @@ impl<'a> Iterator for TreeIterator<'a> {
                         let content = String::from_utf8_lossy(blob.content()).to_string();
                         self.index = self.components.len();
                         Some(Ok(Some(content)))
-                    },
-                    _ => {
-                        Some(Ok(None))
                     }
+                    _ => Some(Ok(None)),
                 }
             }
         }

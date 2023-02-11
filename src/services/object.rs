@@ -1,5 +1,3 @@
-use std::fmt::format;
-
 use actix_web::{get, web::Path, HttpResponse, Responder};
 use git2::{Oid, Repository};
 
