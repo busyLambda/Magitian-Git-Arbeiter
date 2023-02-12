@@ -11,6 +11,10 @@ pub async fn tree() -> impl Responder {
 // TODO: Add error handling and improve code
 #[get("/{user_dir}/{repo_name}/blob/{path:.*}")]
 pub async fn blob(path: Path<(String, String, String)>) -> impl Responder {
+
+    #[cfg(debug_assertions)]
+    debug!("Getting blob at: {}", &path.2);
+
     let p = path.2.to_owned();
     let repo = Repository::open(format!("git_test/{}/{}/", path.0, path.1)).unwrap();
     let branch = repo.find_branch("master", git2::BranchType::Local).unwrap();
