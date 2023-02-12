@@ -1,5 +1,5 @@
 use actix_web::{get, web::Path, HttpResponse, Responder};
-use git2::{Oid, Repository};
+use git2::Repository;
 
 use crate::extras::object::{Component, TreeIterator};
 
@@ -12,13 +12,6 @@ pub async fn tree() -> impl Responder {
 #[get("/{user_dir}/{repo_name}/blob/{path:.*}")]
 pub async fn blob(path: Path<(String, String, String)>) -> impl Responder {
     let p = path.2.to_owned();
-    /*let oid = find_blob_via_path(
-        Repository::open(format!("git_test/{}/{}/", path.0, path.1)).unwrap(),
-        &path.2,
-        "master",
-    )*/
-    //.unwrap();
-    //let contents = get_blob_contents(format!("git_test/{}/{}/", path.0, path.1), oid);
     let repo = Repository::open(format!("git_test/{}/{}/", path.0, path.1)).unwrap();
     let branch = repo.find_branch("master", git2::BranchType::Local).unwrap();
     let commit = repo.find_commit(branch.get().target().unwrap()).unwrap();
