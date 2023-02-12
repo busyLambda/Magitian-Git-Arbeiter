@@ -1,5 +1,6 @@
 use git2::Repository;
 
+#[derive(Debug)]
 pub enum Component {
     Tree(String),
     Blob(String),
@@ -7,10 +8,11 @@ pub enum Component {
 
 impl Component {
     // Parse a string as a Vec<Component>
-    fn to_string(path: String) -> Vec<Self> {
+    pub fn from_string(path: String) -> Vec<Self> {
         // Split up the path into a Vec<&str> by dividing it up at the '/' character
         let parts: Vec<&str> = path.split("/").collect();
         // Transform the parts into a Vec<Component>
+        let len = parts.len().to_owned();
 
         /*
             TODO: Redo the Component struct So that instead of Tree and Blob we have
@@ -21,7 +23,7 @@ impl Component {
             .into_iter()
             .enumerate()
             .map(|(index, part)| {
-                if index == parts.len() {
+                if index == len - 1 {
                     Component::Blob(part.to_string())
                 } else {
                     Component::Tree(part.to_string())
