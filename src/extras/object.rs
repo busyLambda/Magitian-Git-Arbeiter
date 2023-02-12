@@ -1,7 +1,7 @@
-use git2::{Repository, Tree, Blob, TreeIter};
+use git2::{Blob, Repository, Tree, TreeIter};
 
 /*
-    TODO: Make two separate functions for this or two iterators 
+    TODO: Make two separate functions for this or two iterators
     even since it would be better if one function was looking for one thing.
 */
 pub struct TrObject {
@@ -17,7 +17,7 @@ impl TrObject {
         Self {
             id: t.id().to_string(),
             name,
-            contents: 
+            contents:
         }
         */
         todo!()
@@ -51,17 +51,33 @@ pub enum BT<'a> {
     Blob(Blob<'a>),
 }
 
+pub enum TB {
+    Tree(String),
+    Blob(String),
+}
+
 #[derive(Debug)]
 pub enum Component {
     Tree(String),
     Final(String),
 }
+impl TB {
+    // TODO: Add submodule recognition.
+    pub fn from_tree_entries(ti: TreeIter) -> Vec<Self> {
+        let comps: Vec<TB> = ti
+            .filter_map(|e| match e.kind().unwrap() {
+                git2::ObjectType::Tree => Some(TB::Tree(e.name().unwrap().to_string())),
+                git2::ObjectType::Blob => Some(TB::Blob(e.name().unwrap().to_string())),
+                _ => None,
+            })
+            .collect();
+
+        comps
+    }
+}
 
 impl Component {
     // Convert a git2::TreeIter into a Vec<Self>
-    pub fn from_tree_entries(t: TreeIter) -> Vec<Self> {
-        todo!()
-    }
     // Parse a string as a Vec<Component>
     pub fn from_string(path: String) -> Vec<Self> {
         // Split up the path into a Vec<&str> by dividing it up at the '/' character
@@ -142,7 +158,6 @@ impl<'a> Iterator for TreeIterator<'a> {
                         let tree = self.repo.find_tree(entry.id()).unwrap();
                         self.index = self.components.len();
                         Some(Ok(Some(BT::Tree(tree))))
-
                     }
                     _ => Some(Ok(None)),
                 }
