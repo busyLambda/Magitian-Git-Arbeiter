@@ -13,9 +13,11 @@ extern crate env_logger;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    std::env::set_var("RUST_LOG", "actix_web=info");
-    env_logger::init();
+    //std::env::set_var("RUST_LOG", "actix_web=info");
+    env_logger::init_from_env(env_logger::Env::default().default_filter_or("info"));
+
     info!("Starting server on 0.0.0.0:8984");
+
     HttpServer::new(|| {
         App::new().wrap(Logger::default()).service(index).service(
             scope("/api")
