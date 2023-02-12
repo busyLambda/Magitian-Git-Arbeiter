@@ -1,5 +1,10 @@
 use git2::{Repository, Tree, Blob};
 
+/*
+    TODO: Make two separate functions for this or two iterators 
+    even since it would be better if one function was looking for one thing.
+*/
+
 pub enum BT<'a> {
     Tree(Tree<'a>),
     Blob(Blob<'a>),
