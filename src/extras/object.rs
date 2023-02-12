@@ -1,9 +1,14 @@
-use git2::Repository;
+use git2::{Repository, Tree, Blob};
+
+pub enum BT<'a> {
+    Tree(Tree<'a>),
+    Blob(Blob<'a>),
+}
 
 #[derive(Debug)]
 pub enum Component {
     Tree(String),
-    Blob(String),
+    Final(String),
 }
 
 impl Component {
@@ -24,7 +29,7 @@ impl Component {
             .enumerate()
             .map(|(index, part)| {
                 if index == len - 1 {
-                    Component::Blob(part.to_string())
+                    Component::Final(part.to_string())
                 } else {
                     Component::Tree(part.to_string())
                 }
@@ -54,7 +59,7 @@ impl<'a> TreeIterator<'a> {
 
 // TODO: introduce error handling and rewrite some of the parts such as the clone() call on ```self.tree```
 impl<'a> Iterator for TreeIterator<'a> {
-    type Item = Result<Option<String>, git2::Error>;
+    type Item = Result<Option<BT<'a>>, git2::Error>;
 
     fn next(&mut self) -> Option<Self::Item> {
         if self.index >= self.components.len() {
@@ -75,14 +80,19 @@ impl<'a> Iterator for TreeIterator<'a> {
                     _ => Some(Ok(None)),
                 }
             }
-            Component::Blob(name) => {
+            Component::Final(name) => {
                 let entry = self.tree.get_name(name.as_str()).unwrap();
                 match entry.kind() {
                     Some(git2::ObjectType::Blob) => {
                         let blob = self.repo.find_blob(entry.id()).unwrap();
-                        let content = String::from_utf8_lossy(blob.content()).to_string();
                         self.index = self.components.len();
-                        Some(Ok(Some(content)))
+                        Some(Ok(Some(BT::Blob(blob))))
+                    }
+                    Some(git2::ObjectType::Tree) => {
+                        let tree = self.repo.find_tree(entry.id()).unwrap();
+                        self.index = self.components.len();
+                        Some(Ok(Some(BT::Tree(tree))))
+
                     }
                     _ => Some(Ok(None)),
                 }
