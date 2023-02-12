@@ -1,9 +1,50 @@
-use git2::{Repository, Tree, Blob};
+use git2::{Repository, Tree, Blob, TreeIter};
 
 /*
     TODO: Make two separate functions for this or two iterators 
     even since it would be better if one function was looking for one thing.
 */
+pub struct TrObject {
+    pub id: String,
+    pub name: String,
+    pub contents: Vec<Component>,
+}
+
+impl TrObject {
+    // Convert a git2::Tree and a String into a TrObject
+    fn from_tree(t: Tree, name: String) -> Self {
+        /*
+        Self {
+            id: t.id().to_string(),
+            name,
+            contents: 
+        }
+        */
+        todo!()
+    }
+}
+
+pub struct BlObject {
+    pub id: String,
+    pub name: String,
+    pub contents: String,
+}
+
+impl BlObject {
+    // Create a BlObject from a git2::Blob and a String
+    fn from_blob(b: Blob, name: String) -> Self {
+        Self {
+            id: b.id().to_string(),
+            name,
+            contents: String::from_utf8_lossy(b.content()).to_string(),
+        }
+    }
+}
+
+pub enum BoTo {
+    Tree(TrObject),
+    Blob(BlObject),
+}
 
 pub enum BT<'a> {
     Tree(Tree<'a>),
@@ -17,6 +58,10 @@ pub enum Component {
 }
 
 impl Component {
+    // Convert a git2::TreeIter into a Vec<Self>
+    pub fn from_tree_entries(t: TreeIter) -> Vec<Self> {
+        todo!()
+    }
     // Parse a string as a Vec<Component>
     pub fn from_string(path: String) -> Vec<Self> {
         // Split up the path into a Vec<&str> by dividing it up at the '/' character
