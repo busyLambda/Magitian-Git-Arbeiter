@@ -7,20 +7,17 @@ use git2::{Blob, Repository, Tree, TreeIter};
 pub struct TrObject {
     pub id: String,
     pub name: String,
-    pub contents: Vec<Component>,
+    pub contents: Vec<TB>,
 }
 
 impl TrObject {
     // Convert a git2::Tree and a String into a TrObject
     fn from_tree(t: Tree, name: String) -> Self {
-        /*
         Self {
             id: t.id().to_string(),
             name,
-            contents:
+            contents: TB::from_tree_entries(t.iter())
         }
-        */
-        todo!()
     }
 }
 
@@ -54,6 +51,7 @@ pub enum BT<'a> {
 pub enum TB {
     Tree(String),
     Blob(String),
+    SubModule(String),
 }
 
 #[derive(Debug)]
