@@ -11,7 +11,6 @@ pub async fn tree() -> impl Responder {
 // TODO: Add error handling and improve code
 #[get("/{user_dir}/{repo_name}/blob/{path:.*}")]
 pub async fn blob(path: Path<(String, String, String)>) -> impl Responder {
-
     #[cfg(debug_assertions)]
     debug!("Getting blob at: {}", &path.2);
 
@@ -25,7 +24,10 @@ pub async fn blob(path: Path<(String, String, String)>) -> impl Responder {
     let tri = TreeIterator::new(&repo, t, components);
     let contents = match tri.filter_map(|r| r.ok()).flatten().last().unwrap() {
         BT::Blob(blob) => blob.content().to_owned(),
-        _ => return HttpResponse::InternalServerError().body("Found non blob item on the blob api endpoint, what?"),
+        _ => {
+            return HttpResponse::InternalServerError()
+                .body("Found non blob item on the blob api endpoint, what?")
+        }
     };
 
     HttpResponse::Ok().body(contents)
