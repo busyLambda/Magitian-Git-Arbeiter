@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
     TODO: Make two separate functions for this or two iterators
     even since it would be better if one function was looking for one thing.
 */
+#[derive(Deserialize, Serialize)]
 pub struct TrObject {
     pub id: String,
     pub name: String,
@@ -45,6 +46,7 @@ pub enum BoTo {
     Blob(BlObject),
 }
 
+#[derive(Deserialize, Serialize)]
 pub enum TB {
     Tree(String),
     Blob(String),
