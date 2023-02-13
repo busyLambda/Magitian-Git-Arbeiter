@@ -1,4 +1,5 @@
 use git2::{Blob, Repository, Tree, TreeIter};
+use serde::{Deserialize, Serialize};
 
 /*
     TODO: Make two separate functions for this or two iterators
@@ -21,6 +22,7 @@ impl TrObject {
     }
 }
 
+#[derive(Deserialize, Serialize)]
 pub struct BlObject {
     pub id: String,
     pub name: String,
@@ -123,7 +125,7 @@ impl<'a> TreeIterator<'a> {
 
 // TODO: introduce error handling and rewrite some of the parts such as the clone() call on ```self.tree```
 impl<'a> Iterator for TreeIterator<'a> {
-    type Item = Result<Option<BT<'a>>, git2::Error>;
+    type Item = Result<Option<BoTo>, git2::Error>;
 
     fn next(&mut self) -> Option<Self::Item> {
         if self.index >= self.components.len() {
@@ -150,12 +152,12 @@ impl<'a> Iterator for TreeIterator<'a> {
                     Some(git2::ObjectType::Blob) => {
                         let blob = self.repo.find_blob(entry.id()).unwrap();
                         self.index = self.components.len();
-                        Some(Ok(Some(BT::Blob(blob))))
+                        Some(Ok(Some(BoTo::Blob(BlObject::from_blob(blob, name.as_str().to_string())))))
                     }
                     Some(git2::ObjectType::Tree) => {
                         let tree = self.repo.find_tree(entry.id()).unwrap();
                         self.index = self.components.len();
-                        Some(Ok(Some(BT::Tree(tree))))
+                        Some(Ok(Some(BoTo::Tree(TrObject::from_tree(tree, name.as_str().to_string())))))
                     }
                     _ => Some(Ok(None)),
                 }

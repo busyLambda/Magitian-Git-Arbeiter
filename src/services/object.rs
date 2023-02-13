@@ -1,7 +1,7 @@
 use actix_web::{get, web::Path, HttpResponse, Responder};
 use git2::Repository;
 
-use crate::extras::object::{Component, TreeIterator, BT};
+use crate::extras::object::{Component, TreeIterator, BT, BoTo};
 
 #[get("/tree/{path}")]
 pub async fn tree() -> impl Responder {
@@ -22,13 +22,12 @@ pub async fn blob(path: Path<(String, String, String)>) -> impl Responder {
     let components = Component::from_string(p);
 
     let tri = TreeIterator::new(&repo, t, components);
-    let contents = match tri.filter_map(|r| r.ok()).flatten().last().unwrap() {
-        BT::Blob(blob) => blob.content().to_owned(),
+    let resp = match tri.filter_map(|r| r.ok()).flatten().last().unwrap() {
+        BoTo::Blob(blob) => HttpResponse::Ok().json(blob),
         _ => {
-            return HttpResponse::InternalServerError()
+            HttpResponse::InternalServerError()
                 .body("Found non blob item on the blob api endpoint, what?")
         }
     };
-
-    HttpResponse::Ok().body(contents)
+    resp
 }
