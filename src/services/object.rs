@@ -1,7 +1,7 @@
 use actix_web::{get, web::Path, HttpResponse, Responder};
 use git2::Repository;
 
-use crate::extras::object::{Component, TreeIterator, BT, BoTo};
+use crate::extras::object::{Component, TreeIterator, BoTo};
 
 #[get("/tree/{path}")]
 pub async fn tree() -> impl Responder {

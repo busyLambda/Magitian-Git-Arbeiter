@@ -45,11 +45,6 @@ pub enum BoTo {
     Blob(BlObject),
 }
 
-pub enum BT<'a> {
-    Tree(Tree<'a>),
-    Blob(Blob<'a>),
-}
-
 pub enum TB {
     Tree(String),
     Blob(String),
