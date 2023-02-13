@@ -5,7 +5,7 @@ use std::io::Read;
 
 use actix_web::{get, middleware::Logger, web::scope, App, HttpResponse, HttpServer, Responder};
 
-use services::{object::blob, repository::new_repository};
+use services::{object::{blob, tree}, repository::new_repository};
 
 #[macro_use]
 extern crate log;
@@ -25,7 +25,7 @@ async fn main() -> std::io::Result<()> {
         App::new().wrap(Logger::default()).service(index).service(
             scope("/api")
                 .service(scope("repository").service(new_repository))
-                .service(scope("object").service(blob)),
+                .service(scope("object").service(blob).service(tree)),
         )
     })
     .bind(("0.0.0.0", 8984))?
