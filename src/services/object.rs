@@ -24,7 +24,7 @@ pub async fn tree(path: Path<(String, String, String)>) -> impl Responder {
     resp
 }
 
-// TODO: Add error handling and improve code
+// TODO: move error handling into a different function.
 #[get("/{user_dir}/{repo_name}/blob/{path:.*}")]
 pub async fn blob(path: Path<(String, String, String)>) -> impl Responder {
     #[cfg(debug_assertions)]
