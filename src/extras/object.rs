@@ -133,10 +133,13 @@ impl<'a> Iterator for TreeIterator<'a> {
         match component {
             Component::Tree(name) => {
                 let tree2 = self.tree.clone();
-                let entry = tree2.get_name(name.as_str()).unwrap();
+                let entry = tree2.get_name(name.as_str())?;
                 match entry.kind() {
                     Some(git2::ObjectType::Tree) => {
-                        self.tree = self.repo.find_tree(entry.id()).unwrap();
+                        self.tree = match self.repo.find_tree(entry.id()) {
+                            Ok(o) => o,
+                            Err(e) => return Some(Err(e)),
+                        };
                         self.index += 1;
                         Some(Ok(None))
                     }
@@ -144,15 +147,21 @@ impl<'a> Iterator for TreeIterator<'a> {
                 }
             }
             Component::Final(name) => {
-                let entry = self.tree.get_name(name.as_str()).unwrap();
+                let entry = self.tree.get_name(name.as_str())?;
                 match entry.kind() {
                     Some(git2::ObjectType::Blob) => {
-                        let blob = self.repo.find_blob(entry.id()).unwrap();
+                        let blob = match self.repo.find_blob(entry.id()) {
+                            Ok(o) => o,
+                            Err(e) => return Some(Err(e)),
+                        };
                         self.index = self.components.len();
                         Some(Ok(Some(BoTo::Blob(BlObject::from_blob(blob, name.as_str().to_string())))))
                     }
                     Some(git2::ObjectType::Tree) => {
-                        let tree = self.repo.find_tree(entry.id()).unwrap();
+                        let tree = match self.repo.find_tree(entry.id()) {
+                            Ok(o) => o,
+                            Err(e) => return Some(Err(e)),
+                        };
                         self.index = self.components.len();
                         Some(Ok(Some(BoTo::Tree(TrObject::from_tree(tree, name.as_str().to_string())))))
                     }
