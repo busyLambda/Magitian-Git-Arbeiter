@@ -14,12 +14,15 @@ pub struct TrObject {
 
 impl TrObject {
     // Convert a git2::Tree and a String into a TrObject
-    fn from_tree(t: Tree, name: String) -> Self {
-        Self {
+    fn from_tree(t: Tree, name: String) -> Option<Self> {
+        Some(Self {
             id: t.id().to_string(),
             name,
-            contents: TB::from_tree_entries(t.iter())
-        }
+            contents: match TB::from_tree_entries(t.iter()) {
+                Some(vtb) => vtb,
+                _ => return None,
+            }
+        })
     }
 }
 
@@ -60,16 +63,22 @@ pub enum Component {
 }
 impl TB {
     // TODO: Add submodule recognition.
-    pub fn from_tree_entries(ti: TreeIter) -> Vec<Self> {
+    pub fn from_tree_entries(ti: TreeIter) -> Option<Vec<Self>> {
         let comps: Vec<TB> = ti
             .filter_map(|e| match e.kind().unwrap() {
-                git2::ObjectType::Tree => Some(TB::Tree(e.name().unwrap().to_string())),
-                git2::ObjectType::Blob => Some(TB::Blob(e.name().unwrap().to_string())),
+                git2::ObjectType::Tree => Some(TB::Tree(match e.name() {
+                    Some(t) => t.to_string(),
+                    _ => return None,
+                })),
+                git2::ObjectType::Blob => Some(TB::Blob(match e.name() {
+                    Some(b) => b.to_string(),
+                    _ => return None,
+                })),
                 _ => None,
             })
             .collect();
 
-        comps
+        Some(comps)
     }
 }
 
@@ -163,7 +172,10 @@ impl<'a> Iterator for TreeIterator<'a> {
                             Err(e) => return Some(Err(e)),
                         };
                         self.index = self.components.len();
-                        Some(Ok(Some(BoTo::Tree(TrObject::from_tree(tree, name.as_str().to_string())))))
+                        Some(Ok(Some(BoTo::Tree(match TrObject::from_tree(tree, name.as_str().to_string()) {
+                            Some(tr) => tr,
+                            _ => return None,
+                        }))))
                     }
                     _ => Some(Ok(None)),
                 }
