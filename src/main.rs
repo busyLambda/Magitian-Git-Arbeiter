@@ -5,7 +5,10 @@ use std::io::Read;
 
 use actix_web::{get, middleware::Logger, web::scope, App, HttpResponse, HttpServer, Responder};
 
-use services::{object::{blob, tree}, repository::new_repository};
+use services::{
+    object::{blob, tree},
+    repository::new_repository,
+};
 
 #[macro_use]
 extern crate log;

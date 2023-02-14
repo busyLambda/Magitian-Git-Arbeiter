@@ -1,7 +1,7 @@
 use actix_web::{get, web::Path, HttpResponse, Responder};
 use git2::Repository;
 
-use crate::extras::object::{Component, TreeIterator, BoTo};
+use crate::extras::object::{BoTo, Component, TreeIterator};
 
 #[get("/{user_dir}/{repo_name}/tree/{path:.*}")]
 pub async fn tree(path: Path<(String, String, String)>) -> impl Responder {
@@ -18,14 +18,11 @@ pub async fn tree(path: Path<(String, String, String)>) -> impl Responder {
     let tri = TreeIterator::new(&repo, t, components);
     let resp = match tri.filter_map(|r| r.ok()).flatten().last().unwrap() {
         BoTo::Tree(tree) => HttpResponse::Ok().json(tree),
-        _ => {
-            HttpResponse::InternalServerError()
-                .body("Found non tree item on the tree api endpoint, what?")
-        }
+        _ => HttpResponse::InternalServerError()
+            .body("Found non tree item on the tree api endpoint, what?"),
     };
     resp
 }
-
 
 // TODO: Add error handling and improve code
 #[get("/{user_dir}/{repo_name}/blob/{path:.*}")]
@@ -43,10 +40,8 @@ pub async fn blob(path: Path<(String, String, String)>) -> impl Responder {
     let tri = TreeIterator::new(&repo, t, components);
     let resp = match tri.filter_map(|r| r.ok()).flatten().last().unwrap() {
         BoTo::Blob(blob) => HttpResponse::Ok().json(blob),
-        _ => {
-            HttpResponse::InternalServerError()
-                .body("Found non blob item on the blob api endpoint, what?")
-        }
+        _ => HttpResponse::InternalServerError()
+            .body("Found non blob item on the blob api endpoint, what?"),
     };
     resp
 }
