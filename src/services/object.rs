@@ -3,6 +3,7 @@ use git2::Repository;
 
 use crate::extras::object::{BoTo, Component, TreeIterator};
 
+// FIXME: It panics if the route end in '/'
 #[get("/{user_dir}/{repo_name}/tree/{path:.*}")]
 pub async fn tree(path: Path<(String, String, String)>) -> impl Responder {
     #[cfg(debug_assertions)]
