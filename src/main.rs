@@ -6,6 +6,7 @@ use std::io::Read;
 use actix_web::{get, middleware::Logger, web::scope, App, HttpResponse, HttpServer, Responder};
 
 use services::{
+    collab::diff::{asd, show},
     object::{blob, tree},
     repository::new_repository,
 };
@@ -28,11 +29,7 @@ async fn main() -> std::io::Result<()> {
         App::new().wrap(Logger::default()).service(index).service(
             scope("/api")
                 .service(scope("repository").service(new_repository))
-                .service(
-                    scope("collab")
-                        .service(scope("diff"))
-                        .service(scope("merge")),
-                )
+                .service(scope("collab").service(show).service(asd))
                 .service(scope("object").service(blob).service(tree)),
         )
     })
