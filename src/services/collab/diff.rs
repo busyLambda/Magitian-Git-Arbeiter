@@ -28,13 +28,25 @@ pub struct FT {
 #[get("/diff/show/{user_dir}/{repo_dir}")]
 pub async fn show(path: Path<(String, String)>, opts: Query<FT>) -> impl Responder {
     info!("asd");
-    let repo = Repository::open(format!("git_test/{}/{}", path.0, path.1)).unwrap();
+    let repo = match Repository::open(format!("git_test/{}/{}", path.0, path.1)) {
+        Ok(r) => r,
+        Err(_) => return HttpResponse::InternalServerError().json("Cannot access repository."),
+    };
     let opts = opts.into_inner();
 
     let old_commit = repo
-        .find_commit(Oid::from_str(&opts.from).unwrap())
+        .find_commit(match Oid::from_str(&opts.from) {
+            Ok(oid) => oid,
+            _ => return HttpResponse::InternalServerError().json("Cannot retrieve oid for from"),
+        })
         .unwrap();
-    let new_commit = repo.find_commit(Oid::from_str(&opts.to).unwrap()).unwrap();
+    let new_commit = match repo.find_commit(match Oid::from_str(&opts.to) {
+        Ok(oid) => oid,
+        _ => return HttpResponse::InternalServerError().json("Cannot retrieve oid for to"),
+    }) {
+        Ok(nc) => nc,
+        _ => return HttpResponse::InternalServerError().json("Failed to find commit for to"),
+    };
 
     let diff = repo
         .diff_tree_to_tree(
