@@ -61,15 +61,19 @@ pub async fn show(path: Path<(String, String)>, opts: Query<FT>) -> impl Respond
 
     let mut buffer = Vec::new();
     diff.print(git2::DiffFormat::Patch, |_delta, _hunk, line| {
+        let mut prefix = "";
+        match line.origin() {
+            '+' => prefix = "+",
+            '-' => prefix = "-",
+            _ => {}
+        }
+
+        buffer.extend_from_slice(prefix.as_bytes());
         buffer.extend_from_slice(line.content());
+        buffer.push(b'\n');
         true
     })
     .unwrap();
 
     HttpResponse::Ok().body(buffer)
-}
-
-#[get("/test")]
-pub async fn asd() -> impl Responder {
-    "asd"
 }
