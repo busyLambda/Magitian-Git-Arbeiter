@@ -28,6 +28,11 @@ async fn main() -> std::io::Result<()> {
         App::new().wrap(Logger::default()).service(index).service(
             scope("/api")
                 .service(scope("repository").service(new_repository))
+                .service(
+                    scope("collab")
+                        .service(scope("diff"))
+                        .service(scope("merge")),
+                )
                 .service(scope("object").service(blob).service(tree)),
         )
     })
