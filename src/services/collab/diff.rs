@@ -61,14 +61,9 @@ pub async fn show(path: Path<(String, String)>, opts: Query<FT>) -> impl Respond
 
     let mut buffer = Vec::new();
     diff.print(git2::DiffFormat::Patch, |_delta, _hunk, line| {
-        let mut prefix = "";
-        match line.origin() {
-            '+' => prefix = "+",
-            '-' => prefix = "-",
-            _ => {}
-        }
+        let prefix = line.origin();
 
-        buffer.extend_from_slice(prefix.as_bytes());
+        buffer.extend_from_slice(prefix.to_string().as_bytes());
         buffer.extend_from_slice(line.content());
         buffer.push(b'\n');
         true
