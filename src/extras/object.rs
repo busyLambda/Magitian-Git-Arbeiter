@@ -14,7 +14,7 @@ pub struct TrObject {
 
 impl TrObject {
     // Convert a git2::Tree and a String into a TrObject
-    fn from_tree(t: Tree, name: String) -> Option<Self> {
+    pub fn from_tree(t: Tree, name: String) -> Option<Self> {
         Some(Self {
             id: t.id().to_string(),
             name,
