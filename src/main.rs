@@ -17,7 +17,7 @@ extern crate env_logger;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    //std::env::set_var("RUST_LOG", "actix_web=info");
+    // If we are running with dev opt level then enable debug logging otherwise we enable info logging.
     #[cfg(debug_assertions)]
     env_logger::init_from_env(env_logger::Env::default().default_filter_or("debug"));
     #[cfg(not(debug_assertions))]
