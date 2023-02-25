@@ -19,6 +19,8 @@ Include the following query parameters:
 - Blob:```/object/{path_to_repo}/blob/{path_to_blob}```
 - Tree:```/object/{path_to_repo}/tree/{path_to_tree}```
 
+- Root:```/object/{path_to_repo}/tree``` **IMPORTANT**: if you put a '/' at the end it will **NOT** match since that is the Tree path.
+
 In the case of blobs the blobs contents will be returned in the body and in the case of a tree you will recieve a tree structure.
 
 ## Collab
