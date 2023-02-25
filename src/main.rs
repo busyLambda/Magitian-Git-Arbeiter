@@ -7,7 +7,7 @@ use actix_web::{get, middleware::Logger, web::scope, App, HttpResponse, HttpServ
 
 use services::{
     collab::diff::show,
-    object::{blob, tree},
+    object::{blob, tree, root},
     repository::new_repository,
 };
 
@@ -30,7 +30,7 @@ async fn main() -> std::io::Result<()> {
             scope("/api")
                 .service(scope("repository").service(new_repository))
                 .service(scope("collab").service(show))
-                .service(scope("object").service(blob).service(tree)),
+                .service(scope("object").service(blob).service(tree).service(root)),
         )
     })
     .bind(("0.0.0.0", 8984))?
