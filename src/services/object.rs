@@ -6,7 +6,6 @@ use crate::extras::object::{BoTo, Component, TreeIterator, TrObject};
 // FIXME: It panics if the route end in '/'
 #[get("/{user_dir}/{repo_name}/tree/{path:.*}")]
 pub async fn tree(path: Path<(String, String, String)>) -> impl Responder {
-    let p: String;
     let repo = Repository::open(format!("git_test/{}/{}/", path.0, path.1)).unwrap();
     let branch = repo.find_branch("master", git2::BranchType::Local).unwrap();
     let commit = repo.find_commit(branch.get().target().unwrap()).unwrap();
@@ -23,7 +22,7 @@ pub async fn tree(path: Path<(String, String, String)>) -> impl Responder {
     resp
 }
 
-#[get("/{user_dir}/{repo_name}/tree")]
+#[get("/{user_dir}/{repo_name}/root/")]
 pub async fn root(path: Path<(String, String)>) -> impl Responder {
     let repo = Repository::open(format!("git_test/{}/{}/", path.0, path.1)).unwrap();
     let branch = repo.find_branch("master", git2::BranchType::Local).unwrap();
@@ -35,7 +34,7 @@ pub async fn root(path: Path<(String, String)>) -> impl Responder {
 }
 
 // TODO: move error handling into a different function.
-#[get("/{user_dir}/{repo_name}/blob/")]
+#[get("/{user_dir}/{repo_name}/blob/{path:.*}")]
 pub async fn blob(path: Path<(String, String, String)>) -> impl Responder {
     #[cfg(debug_assertions)]
     debug!("Getting blob at: {}", &path.2);
