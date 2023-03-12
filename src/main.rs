@@ -7,7 +7,7 @@ use actix_web::{get, middleware::Logger, web::scope, App, HttpResponse, HttpServ
 
 use services::{
     collab::diff::show,
-    object::{blob, tree},
+    object::{blob, tree, root},
     repository::new_repository,
 };
 
@@ -17,7 +17,7 @@ extern crate env_logger;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    //std::env::set_var("RUST_LOG", "actix_web=info");
+    // If we are running with dev opt level then enable debug logging otherwise we enable info logging.
     #[cfg(debug_assertions)]
     env_logger::init_from_env(env_logger::Env::default().default_filter_or("debug"));
     #[cfg(not(debug_assertions))]
@@ -30,7 +30,7 @@ async fn main() -> std::io::Result<()> {
             scope("/api")
                 .service(scope("repository").service(new_repository))
                 .service(scope("collab").service(show))
-                .service(scope("object").service(blob).service(tree)),
+                .service(scope("object").service(blob).service(tree).service(root)),
         )
     })
     .bind(("0.0.0.0", 8984))?

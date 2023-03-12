@@ -19,6 +19,8 @@ Include the following query parameters:
 - Blob:```/object/{path_to_repo}/blob/{path_to_blob}```
 - Tree:```/object/{path_to_repo}/tree/{path_to_tree}```
 
+- Root:```/object/{path_to_repo}/root``` 
+
 In the case of blobs the blobs contents will be returned in the body and in the case of a tree you will recieve a tree structure.
 
 ## Collab
@@ -26,7 +28,10 @@ In the case of blobs the blobs contents will be returned in the body and in the 
 Used for "code review", diffs, and merge requests.
 ### Diff
 ```/diff```
-- Compare two commits: ```/show/{user_dir}/{repo_dir}?from={Commit_Oid that is older}&to={Commit_Oid that is the newer one}```
-  - example: ```http://localhost:8984/api/collab/diff/show/asd/linux?from=12b46a201db6d7072a1c82ac6534d37808b1ab3f&to=ca7a0af2d86a14f73ca0f1191bb17240dfae9ac0```
+- Compare two commits: ```/show/{user_dir}/{repo_dir}?from={Older Commit OID}&to={Newer commit OID}```
+  - example: 
+  ```
+  http://localhost:8984/api/collab/diff/show/asd/linux?from=12b46a201db6d7072a1c82ac6534d37808b1ab3f&to=ca7a0af2d86a14f73ca0f1191bb17240dfae9ac0
+  ```
 
 ### Merge
